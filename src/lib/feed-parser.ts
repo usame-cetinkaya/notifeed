@@ -26,7 +26,14 @@ type RssItem = {
 };
 
 export async function parseFeed(url: string): Promise<Feed> {
-  const res = await fetch(url, { redirect: "follow" });
+  const res = await fetch(url, {
+    redirect: "follow",
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115 Safari/537.36",
+      Accept: "application/rss+xml,application/xml;q=0.9,*/*;q=0.8",
+    },
+  });
   const xml = await res.text();
 
   const parser = new XMLParser({

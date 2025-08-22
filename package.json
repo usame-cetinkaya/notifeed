@@ -9,7 +9,9 @@
 		"lint": "next lint",
 		"deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
 		"preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-		"cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts"
+		"cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts",
+        "migrate-local": "wrangler d1 migrations apply notifeed --local",
+        "migrate-remote": "wrangler d1 migrations apply notifeed --remote"
 	},
 	"dependencies": {
 		"@opennextjs/cloudflare": "^1.6.5",

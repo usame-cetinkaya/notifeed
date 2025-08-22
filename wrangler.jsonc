@@ -34,11 +34,16 @@
 	 * databases, object storage, AI inference, real-time communication and more.
 	 * https://developers.cloudflare.com/workers/runtime-apis/bindings/
 	 */
+    "d1_databases": [{
+        "binding": "DB",
+        "database_name": "notifeed",
+        "database_id": "40bd3ef5-ec10-4a40-a578-66843fdec8dd"
+    }],
     "kv_namespaces": [
-      {
-        "binding": "KV",
-        "id": "b7a2a4da43744075ad65ad0c6adf679e"
-      }
+        {
+            "binding": "KV",
+            "id": "b7a2a4da43744075ad65ad0c6adf679e"
+        }
     ]
 	/**
 	 * Environment Variables

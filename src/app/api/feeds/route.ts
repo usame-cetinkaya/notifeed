@@ -40,7 +40,7 @@ export const POST = auth(async function (req) {
   }
 
   const rss = await parseFeed(feedDTO.url);
-  feedDTO.name = rss.feedTitle;
+  feedDTO.name = rss.title;
 
   const feed: Feed = updateFeedWithDTO({ user_id: user.id } as Feed, feedDTO);
 

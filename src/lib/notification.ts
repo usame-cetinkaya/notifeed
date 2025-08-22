@@ -1,8 +1,8 @@
 import { User } from "@/lib/models";
 import { Feed } from "@/lib/feed-parser";
 
-export const getNotificationTitle = ({ feedTitle }: Feed) =>
-  `Notifeed: ${feedTitle} ${new Date().getTime()}`;
+export const getNotificationTitle = ({ title }: Feed) =>
+  `Notifeed: ${title} ${new Date().getTime()}`;
 
 export const getNotificationBody = ({ items }: Feed) =>
   items.map(({ title, link }) => `${title?.trim()}\n${link}`).join("\n\n");

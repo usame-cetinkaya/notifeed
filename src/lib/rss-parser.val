@@ -1,0 +1,26 @@
+import RssParser from "npm:rss-parser";
+
+export default async function (req: Request): Promise<Response> {
+  const authHeader = req.headers.get("Authorization");
+  const AUTH_TOKEN = Deno.env.get("AUTH_TOKEN");
+
+  if (!AUTH_TOKEN || !authHeader || authHeader !== `Bearer ${AUTH_TOKEN}`) {
+    return Response.json({ error: "Unauthorized" }, {
+      status: 401,
+    });
+  }
+
+  try {
+    const { url } = await req.json();
+    const rss = await new RssParser().parseURL(url);
+
+    return Response.json(rss);
+  } catch (err) {
+    return Response.json({
+      error: "Parse error",
+      details: err.message,
+    }, {
+      status: 400,
+    });
+  }
+}

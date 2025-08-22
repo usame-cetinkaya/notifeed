@@ -42,7 +42,7 @@ const notifyViaPushbullet = async (
   }
 };
 
-const notifyViaResend = async (to: string, subject: string, html: string) => {
+const notifyViaResend = async (to: string, subject: string, text: string) => {
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -53,7 +53,7 @@ const notifyViaResend = async (to: string, subject: string, html: string) => {
       from: "notifeed@usame.link",
       to,
       subject,
-      html,
+      text,
     }),
   });
 

@@ -52,7 +52,7 @@ const notifyViaResend = async (to: string, subject: string, html: string) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "reminders@usame.link",
+      from: "notifeed@usame.link",
       to,
       subject,
       html,

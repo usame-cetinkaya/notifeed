@@ -11,6 +11,7 @@ import {
   updateFeedWithDTO,
 } from "@/lib/feed";
 import { getUserByEmail } from "@/lib/user";
+import { parseFeed } from "@/lib/feed-parser";
 
 const getDbAndUser = async (req: NextAuthRequest) => {
   if (!req.auth) throw new Error("Unauthorized");
@@ -24,8 +25,8 @@ const getDbAndUser = async (req: NextAuthRequest) => {
 
 export const GET = auth(async function (req) {
   const { db, user } = await getDbAndUser(req);
-  const reminders = await getFeedsByUserId(db, user.id);
-  const result = reminders.map(toFeedDTO);
+  const feeds = await getFeedsByUserId(db, user.id);
+  const result = feeds.map(toFeedDTO);
 
   return NextResponse.json(result, { status: 200 });
 });
@@ -37,6 +38,9 @@ export const POST = auth(async function (req) {
   if (!feedDTO.url) {
     return NextResponse.json("Bad Request", { status: 400 });
   }
+
+  const rss = await parseFeed(feedDTO.url);
+  feedDTO.name = rss.feedTitle;
 
   const feed: Feed = updateFeedWithDTO({ user_id: user.id } as Feed, feedDTO);
 

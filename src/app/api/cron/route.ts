@@ -1,6 +1,6 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { NextResponse } from "next/server";
-import { parseFeed } from "@/app/lib/feed-parser";
+import { parseFeed } from "@/lib/feed-parser";
 // import { Reminder } from "@/lib/models";
 // import { notify } from "@/lib/notification";
 // import {

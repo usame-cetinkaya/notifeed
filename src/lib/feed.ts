@@ -1,4 +1,4 @@
-import { Feed, FeedDTO } from "@/lib/models";
+import { Feed, FeedDTO, User } from "@/lib/models";
 
 export const toFeedDTO = (feed: Feed): FeedDTO => ({
   id: feed.id,
@@ -11,6 +11,15 @@ export const updateFeedWithDTO = (feed: Feed, dto: FeedDTO): Feed => ({
   name: dto.name || feed.name,
   url: dto.url || feed.url,
 });
+
+export type CronFeed = Feed & Pick<User, "email" | "pb_token">;
+
+export const getFeedsForCron = async (db: D1Database) => {
+  const sql = `SELECT f.*, u.email, u.pb_token FROM feeds f JOIN users u ON f.user_id = u.id`;
+  const result = await db.prepare(sql).all();
+
+  return result.results as CronFeed[];
+};
 
 export const getFeedsByUserId = async (db: D1Database, userId: number) => {
   const sql = `SELECT * FROM feeds WHERE user_id = ? ORDER BY name`;

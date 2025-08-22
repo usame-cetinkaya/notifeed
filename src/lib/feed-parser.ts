@@ -26,7 +26,7 @@ type RssItem = {
 };
 
 export async function parseFeed(url: string): Promise<Feed> {
-  const res = await fetch(url);
+  const res = await fetch(url, { redirect: "follow" });
   const xml = await res.text();
 
   const parser = new XMLParser({

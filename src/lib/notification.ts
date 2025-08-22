@@ -1,19 +1,17 @@
 import { User } from "@/lib/models";
 import { Feed } from "@/lib/feed-parser";
 
-const getTitle = ({ feedTitle }: Feed) =>
+export const getNotificationTitle = ({ feedTitle }: Feed) =>
   `Notifeed: ${feedTitle} ${new Date().getTime()}`;
 
-const getBody = ({ items }: Feed) =>
+export const getNotificationBody = ({ items }: Feed) =>
   items.map(({ title, link }) => `${title?.trim()}\n${link}`).join("\n\n");
 
 export const notify = async (
   user: Pick<User, "email" | "pb_token">,
-  feed: Feed,
+  title: string,
+  body: string,
 ) => {
-  const title = getTitle(feed);
-  const body = getBody(feed);
-
   if (user.pb_token) {
     await notifyViaPushbullet(title, body, user.pb_token);
   }

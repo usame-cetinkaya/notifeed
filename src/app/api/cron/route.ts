@@ -1,8 +1,12 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { NextResponse } from "next/server";
+import { CronFeed, getFeedsForCron } from "@/lib/feed";
 import { parseFeed } from "@/lib/feed-parser";
-import { getFeedsForCron } from "@/lib/feed";
-import { notify } from "@/lib/notification";
+import {
+  getNotificationBody,
+  getNotificationTitle,
+  notify,
+} from "@/lib/notification";
 
 export async function GET(req: Request) {
   // const cronSecret = process.env.CRON_SECRET;
@@ -48,13 +52,26 @@ export async function GET(req: Request) {
 
   for (const result of notifications) {
     if (result.status === "rejected") {
-      console.error("Error fetching feed:", result.reason);
+      const cronFeed = result.reason.feed as CronFeed;
+      await notify(
+        { email: cronFeed.email, pb_token: cronFeed.pb_token },
+        `Notifeed: Failed to fetch ${cronFeed.name}`,
+        result.reason.feed.url,
+      );
       continue;
     }
 
     const notification = result.value;
 
-    // await notify(notification.user, notification.feed);
+    if (!notification.feed.items.length) {
+      continue;
+    }
+
+    await notify(
+      notification.user,
+      getNotificationTitle(notification.feed),
+      getNotificationBody(notification.feed),
+    );
   }
 
   await setLastRunAt(kv, now);

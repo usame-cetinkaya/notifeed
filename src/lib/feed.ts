@@ -28,8 +28,12 @@ export const createFeed = async (db: D1Database, feed: Feed) => {
   return result.meta.last_row_id;
 };
 
-export const deleteFeed = async (db: D1Database, id: number) => {
-  const sql = `DELETE FROM feeds WHERE id = ?`;
+export const deleteFeedOfUser = async (
+  db: D1Database,
+  id: number,
+  userId: number,
+) => {
+  const sql = `DELETE FROM feeds WHERE id = ? AND user_id = ?`;
 
-  await db.prepare(sql).bind(id).run();
+  await db.prepare(sql).bind(id, userId).run();
 };

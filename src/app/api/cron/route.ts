@@ -76,7 +76,7 @@ export async function GET(req: Request) {
 
   await setLastRunAt(kv, now);
 
-  return NextResponse.json(notifications, { status: 200 });
+  return NextResponse.json(null, { status: 200 });
 }
 
 async function getLastRunAt(kv: KVNamespace) {

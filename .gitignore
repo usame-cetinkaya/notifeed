@@ -44,3 +44,7 @@ next-env.d.ts
 !.dev.vars.example
 .env*
 !.env.example
+
+# IDEs and editors
+.idea
+.vscode

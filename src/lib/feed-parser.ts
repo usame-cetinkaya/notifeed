@@ -65,7 +65,7 @@ export async function parseFeed(url: string): Promise<Feed> {
       pubDate: (e.published || "").trim(),
     }));
   } else {
-    throw new Error("Unknown feed format");
+    throw new Error(`Unknown feed format ${xml}`);
   }
 
   return { feedTitle, items };

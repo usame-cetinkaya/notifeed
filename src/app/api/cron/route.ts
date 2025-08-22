@@ -1,4 +1,4 @@
-// import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { NextResponse } from "next/server";
 import { parseFeed } from "@/app/lib/feed-parser";
 // import { Reminder } from "@/lib/models";
@@ -25,10 +25,24 @@ export async function GET(req: Request) {
   console.log(`Cron job started at ${now.toISOString()}`);
 
   // const db = getCloudflareContext().env.DB;
+  const kv = getCloudflareContext().env.KV;
+  const lastRunAt = await getLastRunAt(kv);
 
   const rss = await parseFeed(
     "https://github.com/usame-cetinkaya/notifeed/commits/main.atom",
   );
 
-  return NextResponse.json(rss, { status: 200 });
+  await setLastRunAt(kv, now);
+
+  return NextResponse.json({ lastRunAt, rss }, { status: 200 });
+}
+
+async function getLastRunAt(kv: KVNamespace) {
+  const lastRunAtValue = await kv.get("lastRunAt");
+
+  return lastRunAtValue ? new Date(lastRunAtValue) : new Date();
+}
+
+async function setLastRunAt(kv: KVNamespace, date: Date) {
+  await kv.put("lastRunAt", date.toISOString());
 }

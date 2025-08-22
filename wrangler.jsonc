@@ -20,9 +20,9 @@
 	},
     "triggers": {
         "crons": [
-            "* * * * *"
+            "*/15 * * * *"
         ]
-    }
+    },
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
@@ -34,6 +34,12 @@
 	 * databases, object storage, AI inference, real-time communication and more.
 	 * https://developers.cloudflare.com/workers/runtime-apis/bindings/
 	 */
+    "kv_namespaces": [
+      {
+        "binding": "KV",
+        "id": "b7a2a4da43744075ad65ad0c6adf679e"
+      }
+    ]
 	/**
 	 * Environment Variables
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables

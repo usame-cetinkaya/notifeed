@@ -1,6 +1,6 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { NextResponse } from "next/server";
-import { CronFeed, getFeedsForCron } from "@/lib/feed";
+import { CronFeed, getFeedsForCron, updateFeedCheckedAt } from "@/lib/feed";
 import { parseFeed } from "@/lib/feed-parser";
 import {
   getNotificationBody,
@@ -9,11 +9,9 @@ import {
 } from "@/lib/notification";
 
 export async function GET(req: Request) {
-  const cronSecret = process.env.CRON_SECRET;
-  const authHeader = req.headers.get("Authorization");
-
-  if (!cronSecret || !authHeader || authHeader !== `Bearer ${cronSecret}`) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+  const authHeader = req.headers.get("authorization");
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return new Response("Unauthorized", {
       status: 401,
     });
   }
@@ -23,22 +21,21 @@ export async function GET(req: Request) {
   console.log(`Cron job started at ${now.toISOString()}`);
 
   const db = getCloudflareContext().env.DB;
-  const kv = getCloudflareContext().env.KV;
-  const lastRunAt = await getLastRunAt(kv);
   const feeds = await getFeedsForCron(db);
 
   const notifications = await Promise.allSettled(
     feeds.map(async (feed) => {
       try {
         const rss = await parseFeed(feed.url);
+        const checkedAt = feed.checked_at ? new Date(feed.checked_at) : now;
 
         rss.items = rss.items.filter(
-          (item) => new Date(item.pubDate) > lastRunAt,
+          (item) => new Date(item.pubDate) > checkedAt,
         );
 
         return {
           user: { email: feed.email, pb_token: feed.pb_token },
-          feed: rss,
+          feed: { ...rss, id: feed.id },
         };
       } catch (err) {
         throw {
@@ -64,6 +61,8 @@ export async function GET(req: Request) {
     const notification = result.value;
 
     if (!notification.feed.items.length) {
+      await updateFeedCheckedAt(db, notification.feed.id, now);
+
       continue;
     }
 
@@ -72,19 +71,9 @@ export async function GET(req: Request) {
       getNotificationTitle(notification.feed),
       getNotificationBody(notification.feed),
     );
+
+    await updateFeedCheckedAt(db, notification.feed.id, now);
   }
 
-  await setLastRunAt(kv, now);
-
   return NextResponse.json(null, { status: 200 });
-}
-
-async function getLastRunAt(kv: KVNamespace) {
-  const lastRunAtValue = await kv.get("lastRunAt");
-
-  return lastRunAtValue ? new Date(lastRunAtValue) : new Date();
-}
-
-async function setLastRunAt(kv: KVNamespace, date: Date) {
-  await kv.put("lastRunAt", date.toISOString());
 }

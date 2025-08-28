@@ -38,14 +38,8 @@
         "binding": "DB",
         "database_name": "notifeed",
         "database_id": "40bd3ef5-ec10-4a40-a578-66843fdec8dd"
-    }],
-    "kv_namespaces": [
-        {
-            "binding": "KV",
-            "id": "b7a2a4da43744075ad65ad0c6adf679e"
-        }
-    ]
-	/**
+    }]
+    /**
 	 * Environment Variables
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
 	 */

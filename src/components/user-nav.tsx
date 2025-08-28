@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import { auth, signOut } from "@/auth";
+import { signOut, useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,8 +19,8 @@ const getInitials = (fullName: string) =>
     .map((name) => name.charAt(0).toUpperCase())
     .join("");
 
-export async function UserNav() {
-  const session = await auth();
+export function UserNav() {
+  const { data: session } = useSession();
   const name = session?.user?.name || "";
   const image = session?.user?.image || "";
   const email = session?.user?.email || "";
@@ -52,13 +54,7 @@ export async function UserNav() {
           </DropdownMenuItem>
         </Link>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={async () => {
-            "use server";
-            await signOut();
-          }}
-          className="cursor-pointer"
-        >
+        <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer">
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>

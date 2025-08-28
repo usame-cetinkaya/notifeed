@@ -39,6 +39,16 @@ export const POST = auth(async function (req) {
     return NextResponse.json("Bad Request", { status: 400 });
   }
 
+  const url = new URL(feedDTO.url);
+
+  // if it's a youtube playlist url, convert it to the rss feed url
+  if (url.hostname.endsWith("youtube.com") && url.pathname === "/playlist") {
+    const listId = url.searchParams.get("list");
+    if (listId) {
+      feedDTO.url = `https://www.youtube.com/feeds/videos.xml?playlist_id=${listId}`;
+    }
+  }
+
   const rss = await parseFeed(feedDTO.url);
   feedDTO.name = rss.title;
 

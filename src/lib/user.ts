@@ -26,3 +26,15 @@ export const createUser = async (db: D1Database, email: string) => {
 
   return { id, email } as User;
 };
+
+export const updateUserPbToken = async (
+  db: D1Database,
+  userId: number,
+  pb_token: string,
+) => {
+  const sql = `UPDATE users SET pb_token = ? WHERE id = ?`;
+  await db
+    .prepare(sql)
+    .bind(pb_token || null, userId)
+    .run();
+};

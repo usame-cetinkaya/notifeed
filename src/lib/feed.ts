@@ -21,6 +21,16 @@ export const getFeedsForCron = async (db: D1Database) => {
   return result.results as CronFeed[];
 };
 
+export const updateFeedCheckedAt = async (
+  db: D1Database,
+  id: number,
+  date: Date,
+) => {
+  const sql = `UPDATE feeds SET checked_at = ? WHERE id = ?`;
+
+  await db.prepare(sql).bind(date.toISOString(), id).run();
+};
+
 export const getFeedsByUserId = async (db: D1Database, userId: number) => {
   const sql = `SELECT * FROM feeds WHERE user_id = ? ORDER BY name`;
   const result = await db.prepare(sql).bind(userId).all();

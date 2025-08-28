@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { NextAuthRequest } from "next-auth";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { NextResponse } from "next/server";
-import { getUserByEmail } from "@/lib/user";
+import { getUserByEmail, updateUserPbToken } from "@/lib/user";
 
 const getDbAndUser = async (req: NextAuthRequest) => {
   const db = getCloudflareContext().env.DB;
@@ -26,11 +26,7 @@ export const PUT = auth(async function (req) {
   const { db, user } = await getDbAndUser(req);
   const { pb_token } = (await req.json()) as { pb_token: string };
 
-  const sql = `UPDATE users SET pb_token = ? WHERE id = ?`;
-  await db
-    .prepare(sql)
-    .bind(pb_token || null, user.id)
-    .run();
+  await updateUserPbToken(db, user.id, pb_token);
 
   return NextResponse.json(null, { status: 200 });
 });
